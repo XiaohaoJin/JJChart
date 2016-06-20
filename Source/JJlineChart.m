@@ -149,9 +149,26 @@
         {
             CGFloat value = [childArray[j] floatValue];
             NSLog(@" value = %f, 高 = %f, 比例 = %f", value, containerViewHeight, (1 - value/_maxValue));
+            CGFloat ratio = 1;
+            if (_maxValue != 0)
+            {
+                ratio = 1 - value/_maxValue;
+            }
+
+            CGPoint point;
+            if (ratio == 1)
+            {
+                point = CGPointMake(xPosition + j*_xLabelWidth,
+                                    ((containerViewHeight) * ratio));
+            }
+            else
+            {
+                point = CGPointMake(xPosition + j*_xLabelWidth,
+                                    ((containerViewHeight) * ratio)+_rowHeight/2.0);
+            }
             
-            CGPoint point = CGPointMake(xPosition + j*_xLabelWidth,
-                                        ((containerViewHeight - _rowHeight) * (1 - value/_maxValue)) + _rowHeight/2.0);
+    
+        
             
             UIView * pointView = [UIView new];
             pointView.frame = CGRectMake(0, 0, 6, 6);

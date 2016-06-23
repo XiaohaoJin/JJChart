@@ -29,13 +29,13 @@
                                     @"bb",@"cc",@"dd",@"aa",@"bb",
                                     @"cc",@"dd",@"aa",@"bb",@"cc",
                                     @"dd" ];
-    self.lineChart.valueArray = @[ @[ @19,@0,@22,@46,@44,
+    self.lineChart.valueArray = @[ @[ @19,@0,@22,@0,@44,
                                       @31,@19,@30,@22,@46,
                                       @44,@31,@19,@30,@22,
                                       @46,@10 ],
                                    @[ @29,@19,@30,@22,@46,
                                       @30,@0,@46,@44,@31,
-                                      @44,@31,@19,@30,@32,
+                                      @44,@31,@0,@30,@32,
                                       @43 ]
                                    ];
     self.lineChart.colorArray = @[ [UIColor greenColor], [UIColor orangeColor] ];

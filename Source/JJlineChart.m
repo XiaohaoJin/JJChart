@@ -32,17 +32,13 @@
         _xTitleHeight = 30;
         _yTitleWidth = 30;
         _xLabelWidth = 30;
-        _rowNum = 8;
+        _rowNum = 5;
         
+        [self addSubview:self.containerView];
         [self addSubview:self.xTitleView];
         [self addSubview:self.yTitleView];
-        [self addSubview:self.containerView];
         
         [self configFrame];
-        
-        _yTitleView.backgroundColor = [UIColor redColor];
-        _xTitleView.backgroundColor = [UIColor yellowColor];
-        _containerView.backgroundColor = [UIColor lightGrayColor];
     }
     return self;
 }
@@ -54,18 +50,41 @@
                                        0,
                                        _yTitleWidth,
                                        size.height - _xTitleHeight);
-    self.containerView.frame = CGRectMake(_yTitleWidth,
-                                          0,
-                                          size.width - _yTitleWidth,
-                                          size.height - _xTitleHeight);
+    //    self.containerView.frame = CGRectMake(_yTitleWidth,
+    //                                          0,
+    //                                          size.width - _yTitleWidth,
+    //                                          size.height - _xTitleHeight);
+    
+    self.containerView.frame = CGRectMake(0, 0, size.width, size.height - _xTitleHeight);
     self.xTitleView.frame = CGRectMake(_yTitleWidth,
                                        size.height - _xTitleHeight,
                                        size.width - _yTitleWidth,
                                        _xTitleHeight);
 }
 
+- (void)setYTitleWidth:(CGFloat)yTitleWidth
+{
+    _yTitleWidth = yTitleWidth;
+    [self configFrame];
+}
+
 - (void)refreshData
 {
+    for (UIView *itemView in self.xTitleView.subviews)
+    {
+        [itemView removeFromSuperview];
+    }
+    
+    for (UIView *itemView in self.yTitleView.subviews)
+    {
+        [itemView removeFromSuperview];
+    }
+    
+    for (UIView *itemView in self.containerView.subviews)
+    {
+        [itemView removeFromSuperview];
+    }
+    
     _xTitleView.contentSize = CGSizeMake(_xLabelWidth * _xTitleArray.count, 0);
     _containerView.contentSize = CGSizeMake(_xLabelWidth * _xTitleArray.count, 0);
     // 设置X轴 title
@@ -74,6 +93,7 @@
         titleLabel.textAlignment = NSTextAlignmentCenter;
         titleLabel.frame = CGRectMake(idx * _xLabelWidth, 0, _xLabelWidth, _xTitleHeight);
         titleLabel.text = obj;
+        titleLabel.font = [UIFont systemFontOfSize:12];
         [_xTitleView addSubview:titleLabel];
     }];
     
@@ -91,8 +111,18 @@
                                        i * _rowHeight,
                                        _yTitleWidth,
                                        _rowHeight);
-        yTitleLabel.text = [NSString stringWithFormat:@"%.0lf", _maxValue - (i * _rowValue)];
+        yTitleLabel.text = [NSString stringWithFormat:@"%.1lf", _maxValue - (i * _rowValue)];
+        yTitleLabel.font = [UIFont systemFontOfSize:12];
         [_yTitleView addSubview:yTitleLabel];
+        
+        /**
+         *  在scrollerview上面设置标线
+         */
+        UIView * line = [[UIView alloc] init];
+        line.frame = CGRectMake(0, _rowHeight/2.0 + i*_rowHeight, self.containerView.contentSize.width, 1);
+        line.backgroundColor = [UIColor lightGrayColor];
+        [self.containerView addSubview:line];
+        
     }
     
     // 绘制线
@@ -143,32 +173,20 @@
         [progressLine setLineCapStyle:kCGLineCapRound];
         [progressLine setLineJoinStyle:kCGLineJoinRound];
         
-        CGFloat xPosition = _xLabelWidth / 2.0;
+        CGFloat xPosition = _xLabelWidth;
         
         for (int j = 0; j < childArray.count; j++)
         {
-            CGFloat value = [childArray[j] floatValue];
-            NSLog(@" value = %f, 高 = %f, 比例 = %f", value, containerViewHeight, (1 - value/_maxValue));
+            CGFloat value = [childArray[j] floatValue]; //数据
+            
             CGFloat ratio = 1;
             if (_maxValue != 0)
             {
                 ratio = 1 - value/_maxValue;
             }
-
-            CGPoint point;
-            if (ratio == 1)
-            {
-                point = CGPointMake(xPosition + j*_xLabelWidth,
-                                    ((containerViewHeight) * ratio));
-            }
-            else
-            {
-                point = CGPointMake(xPosition + j*_xLabelWidth,
-                                    ((containerViewHeight) * ratio)+_rowHeight/2.0);
-            }
+            CGPoint point = CGPointMake(xPosition + j*_xLabelWidth,
+                                        ((containerViewHeight - _rowHeight) * ratio) + _rowHeight/2.0);
             
-    
-        
             
             UIView * pointView = [UIView new];
             pointView.frame = CGRectMake(0, 0, 6, 6);
@@ -241,6 +259,7 @@
     if (!_yTitleView)
     {
         _yTitleView = [UIView new];
+        _yTitleView.backgroundColor = [UIColor greenColor];
     }
     return _yTitleView;
 }
@@ -263,6 +282,10 @@
         _containerView = [UIScrollView new];
         _containerView.delegate = self;
         _containerView.tag = 1;
+        _containerView.bounces = NO;
+        _containerView.showsHorizontalScrollIndicator = NO;
+        //        _containerView.layer.borderWidth = 1;
+        //        _containerView.layer.borderColor = [UIColor lightGrayColor].CGColor;
     }
     return _containerView;
 }
